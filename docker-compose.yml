@@ -1,0 +1,39 @@
+services:
+
+  # ── Backend: .NET Worker Service + Minimal API ─────────────────
+  backend:
+    build:
+      context: ./backend/SystembolagetApp
+      dockerfile: Dockerfile
+    container_name: vinranking-backend
+    restart: unless-stopped
+    volumes:
+      - db-data:/app/data
+    environment:
+      - AI__Provider=${AI_PROVIDER:-openai}
+      - AI__ApiKey=${AI_API_KEY:-}
+      - GWS_API_KEY=${GWS_API_KEY:-}
+    networks:
+      - vinranking
+
+  # ── Frontend: React + nginx ─────────────────────────────────────
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: vinranking-frontend
+    restart: unless-stopped
+    ports:
+      - "3001:80"
+    depends_on:
+      - backend
+    networks:
+      - vinranking
+
+volumes:
+  db-data:
+
+
+networks:
+  vinranking:
+    driver: bridge
