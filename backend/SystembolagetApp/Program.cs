@@ -1,4 +1,3 @@
-using Npgsql.EntityFrameworkCore.PostgreSQL;
 using Microsoft.EntityFrameworkCore;
 using SystembolagetApp;
 using SystembolagetApp.Data;
