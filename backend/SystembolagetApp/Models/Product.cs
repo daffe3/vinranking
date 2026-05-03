@@ -27,10 +27,10 @@ public class Product
     public DateTime FetchedAt { get; set; } = DateTime.UtcNow;
 
     // AI-genererade fält
-    public int? AiRating { get; set; }          // 1–5
-    public int? ValueRating { get; set; }        // 1–5, "prisvärdhet"
+    public int? AiRating { get; set; }         
+    public int? ValueRating { get; set; }     
     public string? AiSummary { get; set; }
-    public string? FlavorProfile { get; set; }   // t.ex. "Fyllig, Fruktigt, Kryddigt"
+    public string? FlavorProfile { get; set; }   
     public DateTime? AiAnalyzedAt { get; set; }
 
     // Användare

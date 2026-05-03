@@ -1,8 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import type { Product, ProductsResponse, Stats, Filters } from '../types';
 
-// I Docker/dev: nginx proxar /api → backend
-// I produktion (Vercel): anrop går till Render-backend via VITE_API_URL
 const API = import.meta.env.VITE_API_URL
   ? `${import.meta.env.VITE_API_URL}/api`
   : '/api';

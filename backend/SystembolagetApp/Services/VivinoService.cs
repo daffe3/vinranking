@@ -69,7 +69,6 @@ public class VivinoService
     private async Task<WineResult?> SearchWineSearcherAsync(HttpClient client, Product product, CancellationToken ct)
     {
         var query = Uri.EscapeDataString(product.Name.Trim());
-        // Wine-Searcher publikt sök-API
         var url = $"https://www.wine-searcher.com/api/wine/search?q={query}&fmt=json&currency=SEK";
 
         HttpResponseMessage resp;
@@ -86,7 +85,6 @@ public class VivinoService
             using var doc = JsonDocument.Parse(json);
             var root = doc.RootElement;
 
-            // Försök hitta betyg i svaret
             JsonElement wines = default;
             if (root.TryGetProperty("wines", out wines) ||
                 root.TryGetProperty("results", out wines) ||
@@ -104,12 +102,10 @@ public class VivinoService
                         count = cr.GetInt32();
                     if (wine.TryGetProperty("community_average_rating", out var car) && car.ValueKind == JsonValueKind.Number)
                     {
-                        // Wine-Searcher 1-5 skala
                         rating = car.GetDouble();
                     }
                     else if (wine.TryGetProperty("score", out var sc) && sc.ValueKind == JsonValueKind.Number)
                     {
-                        // 100-poängsskala → konvertera
                         var raw = sc.GetDouble();
                         if (raw > 10) rating = Math.Round((raw - 50) / 10.0 + 1, 1);
                         else rating = raw;

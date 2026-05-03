@@ -187,8 +187,7 @@ public class AiAnalyzerService
     }
 
     /// <summary>
-    /// Smarta mock-betyg baserade på TasteClock-data och pris/liter.
-    /// TasteClock-fält sparas i FlavorProfile-kolumnen som JSON under datainsamling.
+    /// Sätter smarta mock-betyg baserade på TasteClock-data och pris/liter.
     /// </summary>
     private static void SetSmartMockData(Product product)
     {
@@ -196,7 +195,6 @@ public class AiAnalyzerService
             ? (double)(product.Price / (decimal)(product.Volume / 1000.0))
             : (double)product.Price;
 
-        // Parsea TasteClock-data från Taste-fältet (sparas som "smaktext|||{json}")
         int body = 5, sweetness = 0, roughness = 5, fruitAcid = 5, bitterness = 0;
         if (!string.IsNullOrEmpty(product.Taste) && product.Taste.Contains("|||"))
         {
@@ -214,7 +212,6 @@ public class AiAnalyzerService
             catch { }
         }
 
-        // Betyg: kombinerar komplexitet (body + roughness) med pris/liter-ratio
         var complexity = (body + roughness + fruitAcid) / 3.0;
         var valueScore = pricePerLiter switch
         {
@@ -225,12 +222,10 @@ public class AiAnalyzerService
             _     => 1
         };
 
-        // AI-rating: hög komplexitet + rimligt pris = högt betyg
         var rawRating = (complexity / 10.0) * 3.0 + (valueScore / 5.0) * 2.0;
         product.AiRating = Math.Clamp((int)Math.Round(rawRating), 1, 5);
         product.ValueRating = valueScore;
 
-        // Smakprofil baserad på tasteClocks
         var flavors = new List<string>();
         if (body >= 7) flavors.Add("Fylligt");
         else if (body <= 3) flavors.Add("Lätt");
@@ -246,7 +241,6 @@ public class AiAnalyzerService
 
         product.FlavorProfile = string.Join(", ", flavors);
 
-        // Sammanfattning baserad på kategori och land
         var origin = string.IsNullOrEmpty(product.Country) ? "okänt ursprung" : product.Country;
         var priceComment = valueScore >= 4 ? "Prisvärt val." : valueScore == 3 ? "Medelprisigt." : "I premiumsegmentet.";
         product.AiSummary = product.Category switch

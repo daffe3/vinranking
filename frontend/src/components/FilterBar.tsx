@@ -17,10 +17,6 @@ interface PriceOption {
   max?: number;
 }
 
-// Baserat på faktisk data från API:t:
-// Mousserande vin: subCategory = null | "Rosé" | "Torrt vitt"
-// Rött vin: subCategory = null | "Fruktigt & Smakrikt" | "Kryddigt & Mustigt" | "Mjukt & Bärigt" etc.
-// Vitt vin: subCategory = null | "Druvigt & Blommigt" | "Friskt & Fruktigt" | "Fylligt & Smakrikt" etc.
 const CATEGORIES: CategoryOption[] = [
   { label: 'Alla' },
   { label: 'Rött vin',     category: 'Rött vin' },

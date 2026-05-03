@@ -18,7 +18,6 @@ public class DataRefreshWorker : BackgroundService
         _logger.LogInformation("DataRefreshWorker startad");
         await RunCycleAsync(stoppingToken);
 
-        // Kör AI-analys i loop tills alla är analyserade (100 per batch var 30:e sekund)
         while (!stoppingToken.IsCancellationRequested)
         {
             await Task.Delay(TimeSpan.FromSeconds(30), stoppingToken);
@@ -34,7 +33,6 @@ public class DataRefreshWorker : BackgroundService
             var fetcher = scope.ServiceProvider.GetRequiredService<SystembolagetFetcherService>();
             await fetcher.FetchAndSaveAsync(ct);
 
-            // Första batch AI direkt efter hämtning
             var analyzer = scope.ServiceProvider.GetRequiredService<AiAnalyzerService>();
             await analyzer.AnalyzeUnanalyzedProductsAsync(batchSize: 100, ct);
         }
@@ -52,7 +50,6 @@ public class DataRefreshWorker : BackgroundService
             var analyzer = scope.ServiceProvider.GetRequiredService<AiAnalyzerService>();
             await analyzer.AnalyzeUnanalyzedProductsAsync(batchSize: 100, ct);
 
-            // Hämta Wine-Searcher-betyg för viner som saknar det
             var vivino = scope.ServiceProvider.GetRequiredService<VivinoService>();
             await vivino.EnrichWithVivinoAsync(batchSize: 50, ct);
         }
