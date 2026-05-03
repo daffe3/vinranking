@@ -1,3 +1,4 @@
+using Npgsql.EntityFrameworkCore.PostgreSQL;
 using Microsoft.EntityFrameworkCore;
 using SystembolagetApp;
 using SystembolagetApp.Data;
@@ -6,6 +7,8 @@ using SystembolagetApp.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Använd PostgreSQL i produktion (DATABASE_URL satt), SQLite lokalt
+// CORS – tillåt lokal dev och Vercel-produktion
 var frontendUrl = Environment.GetEnvironmentVariable("FRONTEND_URL") ?? "http://localhost:3001";
 builder.Services.AddCors(options =>
 {
@@ -27,6 +30,7 @@ builder.Services.AddDbContext<AppDbContext>(opt =>
 {
     if (!string.IsNullOrEmpty(databaseUrl))
     {
+        // Render.com sätter DATABASE_URL i postgres:// format – konvertera till Npgsql-format
         var connStr = databaseUrl.StartsWith("postgres://")
             ? ConvertPostgresUrl(databaseUrl)
             : databaseUrl;
@@ -52,6 +56,7 @@ builder.Services.AddHttpClient("WineSearcher", client =>
 });
 builder.Services.AddHttpClient();
 
+// Bind externa API-nycklar från miljövariabler
 builder.Configuration["GWS:ApiKey"] = Environment.GetEnvironmentVariable("GWS_API_KEY") ?? builder.Configuration["GWS:ApiKey"] ?? "";
 builder.Configuration["Systembolaget:ApiKey"] = Environment.GetEnvironmentVariable("SYSTEMBOLAGET_API_KEY") ?? "cfc702aed3094c86b92d6d4ff7a54c84";
 
@@ -63,6 +68,7 @@ builder.Services.AddHostedService<DataRefreshWorker>();
 builder.Services.AddCors(opt => opt.AddDefaultPolicy(p =>
     p.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader()));
 
+// Hjälpmetod för att konvertera Render.com postgres:// URL till Npgsql connection string
 static string ConvertPostgresUrl(string url)
 {
     var uri = new Uri(url);
@@ -111,6 +117,7 @@ app.MapGet("/api/products", async (
     if (favoritesOnly == true)
         query = query.Where(p => p.IsFavorite);
 
+    // SQLite stöder inte decimal i ORDER BY – casta till double
     query = sort switch
     {
         "price_asc"  => query.OrderBy(p => (double)p.Price),
@@ -141,6 +148,7 @@ app.UseCors();
 
 app.MapGet("/api/reset-ai", async (AppDbContext db) =>
 {
+    // Nollställ bara viner med generiska sammanfattningar (gamla mock-data)
     var products = await db.Products
         .Where(p => p.AiAnalyzedAt != null && (
             p.AiSummary == null ||
