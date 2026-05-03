@@ -1,9 +1,9 @@
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
-COPY SystembolagetApp/SystembolagetApp.csproj SystembolagetApp/
-RUN dotnet restore SystembolagetApp/SystembolagetApp.csproj
-COPY SystembolagetApp/ SystembolagetApp/
-WORKDIR /src/SystembolagetApp
+COPY backend/SystembolagetApp/SystembolagetApp.csproj backend/SystembolagetApp/
+RUN dotnet restore backend/SystembolagetApp/SystembolagetApp.csproj
+COPY backend/SystembolagetApp/ backend/SystembolagetApp/
+WORKDIR /src/backend/SystembolagetApp
 RUN dotnet publish -c Release -o /app/publish --no-restore
 
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS runtime
