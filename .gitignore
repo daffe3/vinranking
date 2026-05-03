@@ -16,7 +16,7 @@ frontend/.env.local
 *.db
 *.db-shm
 *.db-wal
-data/
+/data/
 
 # Docker volumes
 docker-volumes/
