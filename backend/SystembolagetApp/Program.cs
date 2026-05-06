@@ -6,17 +6,12 @@ using SystembolagetApp.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
-var frontendUrl = Environment.GetEnvironmentVariable("FRONTEND_URL") ?? "http://localhost:3001";
 builder.Services.AddCors(options =>
 {
     options.AddDefaultPolicy(policy =>
     {
         policy
-            .WithOrigins(
-                "http://localhost:3001",
-                "http://localhost:5173",
-                frontendUrl
-            )
+            .AllowAnyOrigin()
             .AllowAnyHeader()
             .AllowAnyMethod();
     });
@@ -52,19 +47,10 @@ builder.Services.AddHttpClient("WineSearcher", client =>
 });
 builder.Services.AddHttpClient();
 
-builder.Services.AddCors(options =>
-    options.AddDefaultPolicy(p =>
-        p.AllowAnyOrigin()
-         .AllowAnyMethod()
-         .AllowAnyHeader()));
-
 builder.Services.AddScoped<SystembolagetFetcherService>();
 builder.Services.AddScoped<AiAnalyzerService>();
 builder.Services.AddScoped<VivinoService>();
 builder.Services.AddHostedService<DataRefreshWorker>();
-
-builder.Services.AddCors(opt => opt.AddDefaultPolicy(p =>
-    p.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader()));
 
 static string ConvertPostgresUrl(string url)
 {
@@ -139,8 +125,6 @@ app.MapPatch("/api/products/{id}/favorite", async (AppDbContext db, int id) =>
     await db.SaveChangesAsync();
     return Results.Ok(new { product.IsFavorite });
 });
-
-app.UseCors();
 
 app.MapGet("/api/reset-ai", async (AppDbContext db) =>
 {
