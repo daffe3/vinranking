@@ -54,9 +54,9 @@ builder.Services.AddHttpClient();
 
 builder.Services.AddCors(options =>
     options.AddDefaultPolicy(p =>
-        p.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader()));
-builder.Configuration["GWS:ApiKey"] = Environment.GetEnvironmentVariable("GWS_API_KEY") ?? builder.Configuration["GWS:ApiKey"] ?? "";
-builder.Configuration["Systembolaget:ApiKey"] = Environment.GetEnvironmentVariable("SYSTEMBOLAGET_API_KEY") ?? "cfc702aed3094c86b92d6d4ff7a54c84";
+        p.AllowAnyOrigin()
+         .AllowAnyMethod()
+         .AllowAnyHeader()));
 
 builder.Services.AddScoped<SystembolagetFetcherService>();
 builder.Services.AddScoped<AiAnalyzerService>();
